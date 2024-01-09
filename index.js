@@ -25,7 +25,7 @@ const reviewRoutes = require("./routes/reviews.js");
 const dbUrl = process.env.DB_URL || "mongodb://127.0.0.1:27017/yelp-camp";
 
 mongoose.connect(dbUrl, { 
-  dbName: 'yelp-camp'
+  dbName: 'test'
 });
 
 const db = mongoose.connection;
@@ -67,7 +67,7 @@ store.on("error", function (e) {
 
 const sessionConfig = {
   store,
-  name: "yelpsession",
+  name: "session",
   secret: secret,
   resave: false,
   saveUninitialized: true,
