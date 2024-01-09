@@ -1,8 +1,6 @@
 const BaseJoi = require("joi");
-const { number } = require("joi");
-const sanitizeHtml = require("sanitize-html");
 
-// Joi allows us to create extensions
+const sanitizeHtml = require("sanitize-html");
 
 const extension = (joi) => ({
   type: "string",
@@ -37,8 +35,6 @@ module.exports.campgroundSchema = Joi.object({
     })
     .required(),
   deleteImages: Joi.array(),
-
-  // this is the key to refer to  type validation constraint
 });
 
 module.exports.reviewSchema = Joi.object({

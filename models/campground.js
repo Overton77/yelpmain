@@ -1,9 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const Review = require("./review.js");
-const User = require("./user.js");
 
-//https://res.cloudinary.com/de398fjre/image/upload/v1704409220/YelpCamp/wxxew04xn5xmmcw1kvog.jpg
 const opts = { toJSON: { virtuals: true } };
 
 const ImageSchema = new Schema({
@@ -37,7 +35,7 @@ const CampgroundSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
     },
-    // need to change price to a Number
+
     reviews: [
       {
         type: Schema.Types.ObjectId,
@@ -55,8 +53,6 @@ CampgroundSchema.virtual("properties.popUpMarkup").get(function () {
 
 CampgroundSchema.post("findOneAndDelete", async (doc) => {
   if (doc) {
-    // This is a query middlware
-    // other middlware has access to the keyword this
     await Review.deleteMany({
       _id: {
         $in: doc.reviews,

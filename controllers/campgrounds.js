@@ -33,7 +33,7 @@ module.exports.createCampground = async (req, res, next) => {
     filename: f.filename,
   }));
   campground.author = req.user._id;
-  // this is available because of passport local mongoose
+
   await campground.save();
   req.flash("success", "Campground Succesfully created");
   res.redirect(`/campgrounds/${campground._id}`);
@@ -49,8 +49,6 @@ module.exports.showCampground = async (req, res) => {
     })
     .populate("author");
 
-  // Limit the number of reviews that we get at once
-  // We would then paginate or set up infinite scroll
   if (!campground) {
     req.flash("error", "Can not find that campground!");
     return res.redirect("/campgrounds");
@@ -73,9 +71,7 @@ module.exports.renderEditForm = async (req, res) => {
 
 module.exports.updateCampground = async (req, res) => {
   const { id } = req.params;
-  console.log(req.body);
 
-  // it may be that campground gets passed down from isAuthor but I dont' believe so
   const campground = await CampGround.findByIdAndUpdate(id, { ...req.body });
   const imgs = req.files.map((f) => ({ url: f.path, filename: f.filename }));
   campground.images.push(...imgs);

@@ -13,10 +13,6 @@ const {
 
 const campgrounds = require("../controllers/campgrounds.js");
 
-// router.get("/", (req, res) => {
-//   res.send("<h1>Hello From Yelp</h1>");
-// });
-
 router.route("/").get(catchAsync(campgrounds.index)).post(
   isLoggedIn,
   upload.array("image"),

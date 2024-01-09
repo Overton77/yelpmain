@@ -4,11 +4,9 @@ const ExpressError = require("./utils/ExpressError.js");
 const Review = require("./models/review.js");
 
 module.exports.isLoggedIn = (req, res, next) => {
-  // will be filled in with the deserialized version of the user
   if (!req.isAuthenticated()) {
     req.session.returnTo = req.originalUrl;
-    // If the user is not yet signed store the originalUrl in req.session.returnTo
-    // Reference the user routes to understand the logic
+
     req.flash("error", "You must be signed in first");
     return res.redirect("/login");
   }
@@ -18,9 +16,6 @@ module.exports.isLoggedIn = (req, res, next) => {
 module.exports.storeReturnTo = (req, res, next) => {
   if (req.session.returnTo) {
     res.locals.returnTo = req.session.returnTo;
-    // if there is a request.session.returnTo
-    // save it to the res.locals.returnTo for application wide us
-    // as passport destroys the session persistence in a certain instance
   }
   next();
 };

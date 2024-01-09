@@ -17,19 +17,12 @@ const ExpressError = require("./utils/ExpressError.js");
 const mongoSanitize = require("express-mongo-sanitize");
 const helmet = require("helmet");
 
-// How would you impose limits on the amount of images that can be uploaded
-
-// HTML forms by default are url encoded we have to change it to MIME
-
 const campgroundRoutes = require("./routes/campground.js");
 const userRoutes = require("./routes/users.js");
 
 const reviewRoutes = require("./routes/reviews.js");
 
-// const dbUrl = process.env.DB_URL;
-
-const dbUrl = "mongodb://127.0.0.1:27017/yelp-camp";
-//"mongodb://127.0.0.1:27017/yelp-camp"
+const dbUrl = process.env.DB_URL || "mongodb://127.0.0.1:27017/yelp-camp";
 
 mongoose.connect(dbUrl, {
   useNewUrlParser: true,
@@ -59,11 +52,13 @@ app.use(
   })
 );
 
+const secret = process.env.SECRET || "thishouldbeabettersecret";
+
 const store = MongoStore.create({
   mongoUrl: dbUrl,
   touchAfter: 24 * 60 * 60,
   crypto: {
-    secret: "thisshouldbeabettersecret",
+    secret: secret,
   },
 });
 
@@ -74,13 +69,13 @@ store.on("error", function (e) {
 const sessionConfig = {
   store,
   name: "yelpsession",
-  secret: "thisshouldbeabettersecret",
+  secret: secret,
   resave: false,
   saveUninitialized: true,
 
   cookie: {
     httpOnly: true,
-    // secure: true, this means this cookie will only work over https and localhost is not
+
     expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
     maxAge: 1000 * 60 * 60 * 24 * 7,
   },
@@ -88,8 +83,6 @@ const sessionConfig = {
 app.use(session(sessionConfig));
 
 app.use(flash());
-
-// Restricting the locations from which we can fetch resources
 
 app.use(
   helmet({
@@ -130,13 +123,13 @@ app.use(
           "'self'",
           "blob:",
           "data:",
-          "https://res.cloudinary.com", // Adjust to match your Cloudinary account
+          "https://res.cloudinary.com",
           "https://images.unsplash.com/",
         ],
         fontSrc: [
           "'self'",
-          "https://fonts.gstatic.com", // For Google Fonts
-          "https://cdn.jsdelivr.net", // For fonts from jsDelivr
+          "https://fonts.gstatic.com",
+          "https://cdn.jsdelivr.net",
         ],
       },
     },
@@ -144,30 +137,21 @@ app.use(
 );
 
 app.use(passport.initialize());
-// initialize passport
+
 app.use(passport.session());
-// intialize passport session
+
 passport.use(new localStrategy(User.authenticate()));
-// declare and initialize strategy passing in the authenticate method attached to pass port local mongoose
+
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-// app.get("/fakeUser", async (req, res) => {
-//   const user = new User({
-//     email: "Johnoverton@apple.com",
-//     username: "JohnyBoy",
-//   });
-//   const registeredUser = await User.register(user, "soccer");
-//   res.send(registeredUser);
-
 app.use((req, res, next) => {
   res.locals.currentUser = req.user;
-  // You have access to all of the request session objects and variables in all your templates
+
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   next();
 });
-// });
 
 app.use("/", userRoutes);
 app.use("/campgrounds", campgroundRoutes);
@@ -175,18 +159,6 @@ app.use("/campgrounds/:id/reviews", reviewRoutes);
 app.get("/", (req, res) => {
   res.render("home.ejs");
 });
-
-// async function updateCampPrice() {
-//   const campgrounds = await campground.find({});
-//   for (let campground of campgrounds) {
-//     campground.price = Number(campground.price);
-//     await campground.save();
-//   }
-// }
-
-// updateCampPrice().then(() => {
-//   console.log("Migration Completed");
-// });
 
 app.all("*", (req, res, next) => {
   next(new ExpressError("Page Not Found", 404));
