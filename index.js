@@ -33,7 +33,7 @@ db.once("open", () => {
 });
 
 const app = express();
-const Port = 3000;
+
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -167,6 +167,7 @@ app.use((err, req, res, next) => {
   res.status(statusCode).render("error", { err });
 });
 
-app.listen(Port, () => {
+const PORT = process.env.PORT || 3000
+app.listen(PORT, () => {
   console.log(`Express server listening on ${Port}`);
 });
