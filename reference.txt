@@ -1,0 +1,44 @@
+mongoose
+  .connect("mongodb://127.0.0.1:27017/farmStand", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("MONGO CONNECTION OPEN!!!");
+  })
+  .catch((err) => {
+    console.log("OH NO MONGO CONNECTION ERROR!!!!");
+    console.log(err);
+  });
+
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
+app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride("_method")); 
+
+
+   <div class="mb-3">
+        <label for="rating">Rating</label>
+        <input
+          class="form-range"
+          type="range"
+          id="rating"
+          name="review[rating]"
+          min="1"
+          max="5"
+          id=""
+        />
+      </div> 
+
+
+         <!-- <div class="mb-3">
+        <label class="form-label" for="image">image</label>
+        <input
+          class="form-control"
+          type="text"
+          name="campground[image]"
+          id="image"
+          value="//<%= campground.image %>"
+          required
+        />
+      </div> -->
